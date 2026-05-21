@@ -52,4 +52,5 @@ print(df)
 ## Output:
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/66afee8c-305f-4432-ac8a-54cdb5897589" />
 ## Result:
+
 The Random Forest model successfully predicted temperature, PM2.5 pollution, and solar radiation using weather sensor data with good accuracy. The system also generated next-step predictions and visual graphs comparing actual vs predicted values and showing feature importance.
