@@ -21,36 +21,88 @@ RegisterNumber: 212225040467
 ```
 ```
 import pandas as pd
-import matplotlib.pyplot as plt
-from sklearn.cluster import KMeans
-data = {
-    'CustomerID': [1,2,3,4,5,6,7,8,9,10],
-    'Gender': ['Male','Female','Female','Male','Female','Male','Male','Female','Female','Male'],
-    'Age': [19,21,20,23,31,22,35,30,25,28],
-    'Annual Income (k$)': [15,16,17,18,19,20,21,22,23,24],
-    'Spending Score (1-100)': [39,81,6,77,40,76,6,94,3,72]
-}
-df = pd.DataFrame(data)
-X = df[['Annual Income (k$)', 'Spending Score (1-100)']]
-kmeans = KMeans(n_clusters=3, init='k-means++', random_state=42)
-df['Cluster'] = kmeans.fit_predict(X)  
-plt.figure(figsize=(8,6))
-for i in range(3):
-    plt.scatter(X[df['Cluster']==i]['Annual Income (k$)'],
-                X[df['Cluster']==i]['Spending Score (1-100)'],
-                label=f'Cluster {i+1}')
-plt.scatter(kmeans.cluster_centers_[:,0], kmeans.cluster_centers_[:,1],
-            s=200, c='yellow', label='Centroids', marker='X')
-plt.title('Customer Segmentation (K-Means)')
-plt.xlabel('Annual Income (k$)')
-plt.ylabel('Spending Score (1-100)')
-plt.legend()
-plt.show()
-print(df)
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.metrics import mean_squared_error, r2_score
+
+data = pd.read_csv("weather.csv")
+
+
+X = data[['hum', 'pressure', 'wind_speed', 'illumination', 'co2']]
+
+X = X.fillna(X.mean())
+
+y_pollution = data['pm2_5'].fillna(data['pm2_5'].mean())
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y_pollution, test_size=0.2, random_state=42
+)
+
+pollution_model = DecisionTreeRegressor(random_state=42, max_depth=5)
+pollution_model.fit(X_train, y_train)
+
+pollution_pred = pollution_model.predict(X_test)
+
+rmse_pollution = np.sqrt(mean_squared_error(y_test, pollution_pred))
+r2_pollution = r2_score(y_test, pollution_pred)
+accuracy_pollution = r2_pollution * 100
+
+print("🏭 Pollution Prediction (PM2.5)")
+print("Accuracy (%):", accuracy_pollution)
+
+print("R2 Score:", r2_pollution)
+
+
+print("RMSE:", rmse_pollution)
+print("R2 Score:", r2_pollution)
+
+y_temp = data['tem'].fillna(data['tem'].mean())
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y_temp, test_size=0.2, random_state=42
+)
+
+temp_model = DecisionTreeRegressor(random_state=42, max_depth=5)
+temp_model.fit(X_train, y_train)
+
+temp_pred = temp_model.predict(X_test)
+
+rmse_temp = np.sqrt(mean_squared_error(y_test, temp_pred))
+r2_temp = r2_score(y_test, temp_pred)
+accuracy_temp = r2_temp * 100
+print("\n🌡️ Temperature Prediction")
+print("Accuracy (%):", accuracy_temp)
+print("RMSE:", rmse_temp)
+print("R2 Score:", r2_temp)
+
+y_energy = data['tsr'].fillna(data['tsr'].mean())
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y_energy, test_size=0.2, random_state=42
+)
+
+energy_model = DecisionTreeRegressor(random_state=42, max_depth=5)
+energy_model.fit(X_train, y_train)
+
+energy_pred = energy_model.predict(X_test)
+
+rmse_energy = np.sqrt(mean_squared_error(y_test, energy_pred))
+r2_energy = r2_score(y_test, energy_pred)
+accuracy_energy = r2_energy * 100
+print("\n⚡ Energy Prediction (TSR)")
+print("Accuracy (%):", accuracy_energy)
+
+print("RMSE:", rmse_energy)
+print("R2 Score:", r2_energy)
+
 ```
 
 ## Output:
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/66afee8c-305f-4432-ac8a-54cdb5897589" />
+
+<img width="390" height="371" alt="image" src="https://github.com/user-attachments/assets/e5d378d2-0735-4caa-839b-79de13ecca20" />
+
+
 ## Result:
 
 The Random Forest model successfully predicted temperature, PM2.5 pollution, and solar radiation using weather sensor data with good accuracy. The system also generated next-step predictions and visual graphs comparing actual vs predicted values and showing feature importance.
